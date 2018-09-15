@@ -1,0 +1,9 @@
+{
+  "name": "haskell-phalanx",
+  "version": "1.0.0",
+  "license": "MIT",
+  "description": "Formats Haskell files.",
+  "repository": "https://github.com/tfausak/atom-haskell-phalanx",
+  "engines": { "atom": "^1.30.0" },
+  "activationCommands": { "atom-workspace": "haskell-phalanx:format" }
+}
