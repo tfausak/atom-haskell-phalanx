@@ -3,11 +3,17 @@
     "atom-workspace": "haskell-phalanx:format"
   },
   "description": "🛡 Formats Haskell code.",
+  "devDependencies": {
+    "eslint": "^5.6.0"
+  },
   "engines": {
     "atom": "^1.30.0"
   },
   "license": "MIT",
   "name": "haskell-phalanx",
   "repository": "https://github.com/tfausak/atom-haskell-phalanx",
+  "scripts": {
+    "eslint": "eslint"
+  },
   "version": "1.0.0"
 }
