@@ -1,4 +1,5 @@
 const api = require('atom');
+const fs = require('fs');
 const path = require('path');
 const process = require('child_process');
 
@@ -20,24 +21,42 @@ const addErrorNotification = (stderr, stdout) => atom.notifications.addError(
   { detail: stderr.concat(stdout).join(''), dismissable: true }
 );
 
+const findConfig = (file, done) => {
+  if (file) {
+    const directory = path.dirname(file);
+    const config = path.join(directory, 'brittany.yaml');
+    fs.access(config, (err) => {
+      if (err) {
+        findConfig(directory, done);
+      } else {
+        done(config);
+      }
+    });
+  } else {
+    done(null);
+  }
+};
+
 const callBrittany = (editor, done) => {
   const file = editor.getPath();
-  const brittany = process.spawn(
-    'stack',
-    ['exec', '--', 'brittany'],
-    { cwd: file ? path.dirname(file) : null }
-  );
+  findConfig(file, (config) => {
+    const args = ['exec', '--', 'brittany'];
+    if (config) {
+      args.push('--config-file', config);
+    }
+    const brittany = process.spawn('stack', args);
 
-  const stdout = [];
-  const stderr = [];
-  brittany.stdout.on('data', (chunk) => stdout.push(chunk));
-  brittany.stderr.on('data', (chunk) => stderr.push(chunk));
+    const stdout = [];
+    const stderr = [];
+    brittany.stdout.on('data', (chunk) => stdout.push(chunk));
+    brittany.stderr.on('data', (chunk) => stderr.push(chunk));
 
-  const stdin = editor.getText();
-  brittany.on('close', (status) => done({ status, stderr, stdin, stdout }));
+    const stdin = editor.getText();
+    brittany.on('close', (status) => done({ status, stderr, stdin, stdout }));
 
-  brittany.stdin.write(stdin);
-  brittany.stdin.end();
+    brittany.stdin.write(stdin);
+    brittany.stdin.end();
+  });
 };
 
 module.exports = {
