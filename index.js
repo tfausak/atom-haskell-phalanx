@@ -2,13 +2,21 @@ const api = require('atom');
 const path = require('path');
 const process = require('child_process');
 
+const NOTIFICATION_TITLE = 'Haskell Phalanx';
+const NOTIFICATION_DURATION = 1000;
+
+const addSuccessNotification = (detail) => atom.notifications.addSuccess(
+  NOTIFICATION_TITLE,
+  { detail, dismissable: true }
+);
+
 const addWarningNotification = (stderr) => atom.notifications.addWarning(
-  'Haskell Phalanx',
+  NOTIFICATION_TITLE,
   { detail: stderr.join(''), dismissable: true }
 );
 
 const addErrorNotification = (stderr, stdout) => atom.notifications.addError(
-  'Haskell Phalanx',
+  NOTIFICATION_TITLE,
   { detail: stderr.concat(stdout).join(''), dismissable: true }
 );
 
@@ -55,7 +63,10 @@ module.exports = {
           }
 
           const output = stdout.join('');
-          if (output !== stdin) {
+          if (output === stdin) {
+            const notification = addSuccessNotification('Already formatted!');
+            setTimeout(() => notification.dismiss(), NOTIFICATION_DURATION);
+          } else {
             editor.setText(output);
           }
         } else {
