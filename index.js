@@ -24,14 +24,18 @@ const addErrorNotification = (stderr, stdout) => atom.notifications.addError(
 const findConfig = (file, done) => {
   if (file) {
     const directory = path.dirname(file);
-    const config = path.join(directory, 'brittany.yaml');
-    fs.access(config, (err) => {
-      if (err) {
-        findConfig(directory, done);
-      } else {
-        done(config);
-      }
-    });
+    if (directory === file) {
+      done(null);
+    } else {
+      const config = path.join(directory, 'brittany.yaml');
+      fs.access(config, (err) => {
+        if (err) {
+          findConfig(directory, done);
+        } else {
+          done(config);
+        }
+      });
+    }
   } else {
     done(null);
   }
