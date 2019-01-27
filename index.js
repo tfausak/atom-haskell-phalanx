@@ -83,6 +83,7 @@ module.exports = {
   format () {
     const editor = atom.workspace.getActiveTextEditor();
     if (editor) {
+      const cursor = editor.getCursorBufferPosition();
       callBrittany(editor, ({ status, stderr, stdin, stdout }) => {
         if (status === 0) {
           if (stderr.length !== 0) {
@@ -95,6 +96,7 @@ module.exports = {
             setTimeout(() => notification.dismiss(), NOTIFICATION_DURATION);
           } else {
             editor.setText(output);
+            editor.setCursorBufferPosition(cursor, { autoscroll: false });
           }
         } else {
           addErrorNotification(stderr, stdout);
