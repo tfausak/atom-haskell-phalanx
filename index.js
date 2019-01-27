@@ -41,6 +41,20 @@ const findConfig = (file, done) => {
   }
 };
 
+const callBrittanyWith = (args, stdin, done) => {
+  const brittany = process.spawn('stack', args);
+
+  const stdout = [];
+  const stderr = [];
+  brittany.stdout.on('data', (chunk) => stdout.push(chunk));
+  brittany.stderr.on('data', (chunk) => stderr.push(chunk));
+
+  brittany.on('close', (status) => done({ status, stderr, stdin, stdout }));
+
+  brittany.stdin.write(stdin);
+  brittany.stdin.end();
+};
+
 const callBrittany = (editor, done) => {
   const file = editor.getPath();
   findConfig(file, (config) => {
@@ -48,18 +62,8 @@ const callBrittany = (editor, done) => {
     if (config) {
       args.push('--config-file', config);
     }
-    const brittany = process.spawn('stack', args);
-
-    const stdout = [];
-    const stderr = [];
-    brittany.stdout.on('data', (chunk) => stdout.push(chunk));
-    brittany.stderr.on('data', (chunk) => stderr.push(chunk));
-
     const stdin = editor.getText();
-    brittany.on('close', (status) => done({ status, stderr, stdin, stdout }));
-
-    brittany.stdin.write(stdin);
-    brittany.stdin.end();
+    callBrittanyWith(args, stdin, done);
   });
 };
 
