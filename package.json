@@ -13,7 +13,8 @@
   "name": "haskell-phalanx",
   "repository": "https://github.com/tfausak/atom-haskell-phalanx",
   "scripts": {
-    "eslint": "eslint"
+    "eslint": "eslint",
+    "test": "eslint ."
   },
   "version": "1.0.2"
 }
